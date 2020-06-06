@@ -1,0 +1,54 @@
+security:
+
+  encoders:
+      App\Entity\User:
+        algorithm: bcrypt
+
+  providers:
+    users_in_memory: { memory: null }
+    in_database:
+      entity:
+         class: App\Entity\User
+         property: email
+
+  firewalls:
+    dev:
+      pattern: ^/(_(profiler|wdt)|css|images|js)/
+      security: false
+
+    admin:
+      pattern: ^/admin
+      anonymous: true
+      provider: in_database
+      context: wis
+
+      form_login:
+        login_path: admin_login
+        check_path: admin_login
+        default_target_path: /admin
+
+      logout:
+        path: admin_logout
+        target: homepage
+    main:
+      anonymous: lazy
+      provider: in_database
+      context: wis
+
+      form_login:
+        login_path: account_login
+        check_path: account_login
+
+      logout:
+          path: account_logout
+          target : account_login
+
+
+  access_control:
+      - { path: ^/admin/login, roles: IS_AUTHENTICATED_ANONYMOUSLY}
+      - { path: ^/admin, roles: ROLE_ADMIN }
+
+  role_hierarchy:
+      ROLE_SUPER_ADMIN : ROLE_ADMIN
+      ROLE_ADMIN: ROLE_USER
+
